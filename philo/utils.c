@@ -6,16 +6,31 @@
 /*   By: msavelie <msavelie@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/11 11:38:15 by msavelie          #+#    #+#             */
-/*   Updated: 2024/12/11 11:50:57 by msavelie         ###   ########.fr       */
+/*   Updated: 2024/12/11 12:29:01 by msavelie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	ft_putendl_fd(char *s, int fd)
+int	ft_putendl_fd(char *s, int fd)
 {
-	ft_putstr_fd(s, fd);
-	ft_putchar_fd('\n', fd);
+	int	i;
+
+	if (!s)
+	{
+		if (write(fd, "(null)", 6) < 0)
+			return (-1);
+		return (6);
+	}
+	i = 0;
+	while (s[i])
+	{
+		i += write(fd, &s[i], 1);
+		if (i < 0)
+			return (-1);
+	}
+	i += write(fd, "\n", 1);
+	return (i);
 }
 
 int	is_number(char *arg)
