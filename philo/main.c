@@ -6,7 +6,7 @@
 /*   By: msavelie <msavelie@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/11 11:32:45 by msavelie          #+#    #+#             */
-/*   Updated: 2024/12/11 12:34:26 by msavelie         ###   ########.fr       */
+/*   Updated: 2024/12/11 17:20:52 by msavelie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,7 @@ static t_philo	init_philo(char **argv)
 		return (philo);
 	}
 	philo.init_err = 0;
+	philo.philo_dead = 0;
 	return (philo);
 }
 
@@ -45,11 +46,6 @@ int	main(int argc, char **argv)
 	philo = init_philo(argv);
 	if (philo.init_err == 1)
 		return (1);
-	printf("philos: %d\n", philo.philos);
-	printf("time_to_die: %d\n", philo.time_to_die);
-	printf("time_to_eat: %d\n", philo.time_to_eat);
-	printf("time_to_sleep: %d\n", philo.time_to_sleep);
-	printf("meals: %d\n", philo.meals);
 	free(philo.thread);
 	free(philo.forks);
 	return (0);

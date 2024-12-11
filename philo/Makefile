@@ -6,7 +6,7 @@
 #    By: msavelie <msavelie@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/12/11 11:21:34 by msavelie          #+#    #+#              #
-#    Updated: 2024/12/11 11:50:13 by msavelie         ###   ########.fr        #
+#    Updated: 2024/12/11 14:18:00 by msavelie         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -28,7 +28,8 @@ SRCS = \
 	main.c \
 	parse.c \
 	utils.c \
-	error.c
+	error.c \
+	action.c
 
 OBJS = ${SRCS:.c=.o}
 

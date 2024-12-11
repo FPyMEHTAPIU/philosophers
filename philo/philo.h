@@ -6,7 +6,7 @@
 /*   By: msavelie <msavelie@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/11 11:22:49 by msavelie          #+#    #+#             */
-/*   Updated: 2024/12/11 12:27:39 by msavelie         ###   ########.fr       */
+/*   Updated: 2024/12/11 14:21:42 by msavelie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,12 +29,14 @@ typedef struct	s_philo
 	int				time_to_sleep;
 	int				meals;
 	int				init_err;
+	int				philo_dead;
 }	t_philo;
 
-int	ft_putendl_fd(char *s, int fd);
-int	is_number(char *arg);
-int	write_err(int type);
-int	ft_atoi(const char *str);
-int	parse_args(t_philo *philo, char **argv);
+int		ft_putendl_fd(char *s, int fd);
+int		is_number(char *arg);
+int		write_err(int type);
+int		ft_atoi(const char *str);
+int		parse_args(t_philo *philo, char **argv);
+void	action(t_philo *philo);
 
 #endif
