@@ -6,7 +6,7 @@
 /*   By: msavelie <msavelie@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/11 11:32:45 by msavelie          #+#    #+#             */
-/*   Updated: 2024/12/12 14:15:03 by msavelie         ###   ########.fr       */
+/*   Updated: 2024/12/12 17:32:51 by msavelie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,6 @@ int	main(int argc, char **argv)
 	obj = init_holder(argv);
 	if (obj.init_err == 1)
 		return (1);
-	
 	clean_struct(&obj);
 	return (0);
 }

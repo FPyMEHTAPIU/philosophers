@@ -6,7 +6,7 @@
 /*   By: msavelie <msavelie@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/12 12:36:14 by msavelie          #+#    #+#             */
-/*   Updated: 2024/12/12 16:45:51 by msavelie         ###   ########.fr       */
+/*   Updated: 2024/12/12 17:44:44 by msavelie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,6 +52,7 @@ static void	assign_forks(t_holder *obj, t_data data)
 		obj->philos[i].left_fork = &obj->forks[i];
 		obj->philos[i].right_fork = &obj->forks[(i + 1) % data.num_philos];
 		obj->philos[i].id = i + 1;
+		printf("%d left fork: %p\tright fork: %p\n", obj->philos[i].id, obj->philos[i].left_fork, obj->philos[i].right_fork);
 		obj->philos[i].is_dead = 0;
 		obj->philos[i].meals_eaten = 0;
 		i++;
