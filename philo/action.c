@@ -6,18 +6,37 @@
 /*   By: msavelie <msavelie@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/11 14:17:50 by msavelie          #+#    #+#             */
-/*   Updated: 2024/12/12 13:50:47 by msavelie         ###   ########.fr       */
+/*   Updated: 2024/12/12 16:44:19 by msavelie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	*start_routine(void *obj)
+static size_t	get_time(void)
 {
-	t_holder	*temp;
+	struct timeval	tv;
 
-	temp = (t_holder *) obj;
-	printf("%d\n", temp->num_philos);
+	gettimeofday(&tv, NULL);
+	return ((tv.tv_sec * 1000) + (tv.tv_usec / 1000));
+}
+
+void	*start_routine(void *philo)
+{
+	t_philo	*temp;
+	size_t	time;
+
+	temp = (t_philo *) philo;
+	while (!temp->is_dead && temp->meals_eaten != temp->data.meals)
+	{
+		pthread_mutex_lock(temp->left_fork);
+		time = get_time();
+		printf("%zu %d has taken a fork\n", time, temp->id);
+		pthread_mutex_lock(temp->right_fork);
+		time = get_time();
+		printf("%zu %d has taken a fork\n", time, temp->id);
+		pthread_mutex_unlock(temp->left_fork);
+		pthread_mutex_unlock(temp->right_fork);
+	}
 	return (NULL);
 }
 
@@ -29,7 +48,7 @@ void	*start_routine(void *obj)
 // 	//		if failed - unlock [0] fork 
 // }
 
-void	action(t_holder *obj)
+/*void	action(t_holder *obj)
 {
 	int	i;
 
@@ -54,4 +73,4 @@ void	action(t_holder *obj)
 			i++;
 		}
 	}
-}
+}*/

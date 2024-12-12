@@ -6,18 +6,18 @@
 /*   By: msavelie <msavelie@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/12 12:36:14 by msavelie          #+#    #+#             */
-/*   Updated: 2024/12/12 13:56:58 by msavelie         ###   ########.fr       */
+/*   Updated: 2024/12/12 16:45:51 by msavelie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-static int	create_muthreads(t_holder *obj)
+static int	create_muthreads(t_holder *obj, t_data data)
 {
 	int	i;
 
 	i = 0;
-	while (i < obj->num_philos)
+	while (i < data.num_philos)
 	{
 		if (pthread_mutex_init(&obj->forks[i], NULL) != 0)
 		{
@@ -28,9 +28,9 @@ static int	create_muthreads(t_holder *obj)
 		i++;
 	}
 	i = 0;
-	while (i < obj->num_philos)
+	while (i < data.num_philos)
 	{
-		if (pthread_create(&obj->threads[i], NULL, start_routine, (void *)obj) != 0)
+		if (pthread_create(&obj->threads[i], NULL, start_routine, (void *)&obj->philos[i]) != 0)
 		{
 			while (i--)
 				pthread_detach(obj->threads[i]);
@@ -41,13 +41,31 @@ static int	create_muthreads(t_holder *obj)
 	return (1);
 }
 
-static int	init_philos(t_holder *obj)
+static void	assign_forks(t_holder *obj, t_data data)
 {
-	obj->philos = malloc(sizeof(t_philo) * obj->num_philos);
+	int	i;
+
+	i = 0;
+	while (i < data.num_philos)
+	{
+		obj->philos[i].thread = &obj->threads[i];
+		obj->philos[i].left_fork = &obj->forks[i];
+		obj->philos[i].right_fork = &obj->forks[(i + 1) % data.num_philos];
+		obj->philos[i].id = i + 1;
+		obj->philos[i].is_dead = 0;
+		obj->philos[i].meals_eaten = 0;
+		i++;
+	}
+}
+
+static int	init_philos(t_holder *obj, t_data data)
+{
+	obj->philos = malloc(sizeof(t_philo) * data.num_philos);
 	if (!obj->philos)
 		return (0);
-	if (!create_muthreads(obj))
+	if (!create_muthreads(obj, data))
 		return (0);
+	assign_forks(obj, obj->data);
 	return (1);
 }
 
@@ -58,20 +76,20 @@ t_holder	init_holder(char **argv)
 	obj.init_err = 1;
 	if (parse_args(&obj, argv) != 0)
 		return (obj);
-	obj.threads = malloc(sizeof(pthread_t) * obj.num_philos);
+	obj.threads = malloc(sizeof(pthread_t) * obj.data.num_philos);
 	if (!obj.threads)
 	{
 		write_err(4);
 		return (obj);
 	}
-	obj.forks = malloc(sizeof(pthread_mutex_t) * obj.num_philos);
+	obj.forks = malloc(sizeof(pthread_mutex_t) * obj.data.num_philos);
 	if (!obj.forks)
 	{
 		free(obj.threads);
 		write_err(4);
 		return (obj);
 	}
-	if (!init_philos(&obj))
+	if (!init_philos(&obj, obj.data))
 		clean_struct(&obj);
 	else
 		obj.init_err = 0;

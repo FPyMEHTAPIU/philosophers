@@ -6,7 +6,7 @@
 /*   By: msavelie <msavelie@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/11 11:22:49 by msavelie          #+#    #+#             */
-/*   Updated: 2024/12/12 13:51:04 by msavelie         ###   ########.fr       */
+/*   Updated: 2024/12/12 15:40:37 by msavelie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,19 +19,14 @@
 # include <sys/time.h>
 # include <pthread.h>
 
-typedef struct	s_holder
+typedef struct	s_data
 {
-	pthread_t		*threads;
-	pthread_mutex_t	*forks;
-	struct t_philo	*philos;
-	int				num_philos;
-	int				time_to_die;
-	int				time_to_eat;
-	int				time_to_sleep;
-	int				meals;
-	int				init_err;
-	int				philo_dead;
-}	t_holder;
+	int	num_philos;
+	int	time_to_die;
+	int	time_to_eat;
+	int	time_to_sleep;
+	int	meals;
+}	t_data;
 
 typedef struct	s_philo
 {
@@ -41,7 +36,18 @@ typedef struct	s_philo
 	pthread_t		*thread;
 	pthread_mutex_t	*left_fork;
 	pthread_mutex_t	*right_fork;
+	t_data			data;
 }	t_philo;
+
+typedef struct	s_holder
+{
+	pthread_t		*threads;
+	pthread_mutex_t	*forks;
+	t_philo			*philos;
+	t_data			data;
+	int				init_err;
+	int				philo_dead;
+}	t_holder;
 
 int			ft_putendl_fd(char *s, int fd);
 int			is_number(char *arg);
