@@ -6,7 +6,7 @@
 /*   By: msavelie <msavelie@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/11 11:22:49 by msavelie          #+#    #+#             */
-/*   Updated: 2024/12/12 12:42:30 by msavelie         ###   ########.fr       */
+/*   Updated: 2024/12/12 13:51:04 by msavelie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ typedef struct	s_holder
 {
 	pthread_t		*threads;
 	pthread_mutex_t	*forks;
-	t_philo			*philos;
+	struct t_philo	*philos;
 	int				num_philos;
 	int				time_to_die;
 	int				time_to_eat;
@@ -50,5 +50,7 @@ int			ft_atoi(const char *str);
 int			parse_args(t_holder *obj, char **argv);
 void		action(t_holder *obj);
 t_holder	init_holder(char **argv);
+void		clean_struct(t_holder *obj);
+void		*start_routine(void *obj);
 
 #endif

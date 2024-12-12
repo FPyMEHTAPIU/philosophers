@@ -6,19 +6,16 @@
 /*   By: msavelie <msavelie@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/12 12:36:14 by msavelie          #+#    #+#             */
-/*   Updated: 2024/12/12 12:56:35 by msavelie         ###   ########.fr       */
+/*   Updated: 2024/12/12 13:56:58 by msavelie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-static int	init_philos(t_holder *obj)
+static int	create_muthreads(t_holder *obj)
 {
-	int		i;
+	int	i;
 
-	obj->philos = malloc(sizeof(t_philo) * obj->num_philos);
-	if (!obj->philos)
-		return (0);
 	i = 0;
 	while (i < obj->num_philos)
 	{
@@ -33,14 +30,25 @@ static int	init_philos(t_holder *obj)
 	i = 0;
 	while (i < obj->num_philos)
 	{
-		if (pthread_create(&obj->threads[i], NULL, NULL, NULL) != 0)
+		if (pthread_create(&obj->threads[i], NULL, start_routine, (void *)obj) != 0)
 		{
 			while (i--)
-				pthread_detach(&obj->threads[i]);
+				pthread_detach(obj->threads[i]);
 			return (0);
 		}
 		i++;
 	}
+	return (1);
+}
+
+static int	init_philos(t_holder *obj)
+{
+	obj->philos = malloc(sizeof(t_philo) * obj->num_philos);
+	if (!obj->philos)
+		return (0);
+	if (!create_muthreads(obj))
+		return (0);
+	return (1);
 }
 
 t_holder	init_holder(char **argv)
@@ -63,7 +71,10 @@ t_holder	init_holder(char **argv)
 		write_err(4);
 		return (obj);
 	}
-	obj.init_err = 0;
+	if (!init_philos(&obj))
+		clean_struct(&obj);
+	else
+		obj.init_err = 0;
 	obj.philo_dead = 0;
 	return (obj);
 }

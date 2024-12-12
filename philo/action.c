@@ -6,24 +6,28 @@
 /*   By: msavelie <msavelie@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/11 14:17:50 by msavelie          #+#    #+#             */
-/*   Updated: 2024/12/12 12:42:01 by msavelie         ###   ########.fr       */
+/*   Updated: 2024/12/12 13:50:47 by msavelie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	start_routine(void *obj)
+void	*start_routine(void *obj)
 {
+	t_holder	*temp;
 
+	temp = (t_holder *) obj;
+	printf("%d\n", temp->num_philos);
+	return (NULL);
 }
 
-int	check_forks(t_holder *obj, int index)
-{
-	//TODO: lock [0] fork
-	// 	if succeed try to lock [1] fork
-	// 		if succeed - return
-	//		if failed - unlock [0] fork 
-}
+// int	check_forks(t_holder *obj, int index)
+// {
+// 	//TODO: lock [0] fork
+// 	// 	if succeed try to lock [1] fork
+// 	// 		if succeed - return
+// 	//		if failed - unlock [0] fork 
+// }
 
 void	action(t_holder *obj)
 {

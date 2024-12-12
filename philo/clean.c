@@ -1,26 +1,42 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
+/*   clean.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: msavelie <msavelie@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/12/11 11:32:45 by msavelie          #+#    #+#             */
-/*   Updated: 2024/12/12 13:04:51 by msavelie         ###   ########.fr       */
+/*   Created: 2024/12/12 13:02:02 by msavelie          #+#    #+#             */
+/*   Updated: 2024/12/12 13:55:28 by msavelie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-int	main(int argc, char **argv)
+void	clean_struct(t_holder *obj)
 {
-	t_holder	obj;
+	int	i;
 
-	if (argc < 5 || argc > 6)
-		return (write_err(1));
-	obj = init_holder(argv);
-	if (obj.init_err == 1)
-		return (1);
-	clean_struct(&obj);
-	return (0);
+	if (!obj)
+		return ;
+	if (obj->forks)
+	{
+		free(obj->forks);
+		obj->forks = NULL;
+	}
+	if (obj->threads)
+	{
+		free(obj->threads);
+		obj->threads = NULL;
+	}
+	if (obj->philos)
+	{
+		free(obj->philos);
+		obj->philos = NULL;
+	}
+	i = obj->num_philos;
+	while (i--)
+	{
+		pthread_mutex_destroy(&obj->forks[i]);
+		pthread_detach(obj->threads[i]);
+	}
 }
