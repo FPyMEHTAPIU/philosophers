@@ -6,7 +6,7 @@
 /*   By: msavelie <msavelie@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/12 13:02:02 by msavelie          #+#    #+#             */
-/*   Updated: 2024/12/13 15:20:03 by msavelie         ###   ########.fr       */
+/*   Updated: 2024/12/13 17:08:18 by msavelie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ static void	destroy_philo_mtxs(t_holder *obj)
 	while (i < obj->data.num_philos)
 	{
 		pthread_mutex_destroy(&obj->philos[i].meal_lock);
-		pthread_mutex_destroy(&obj->philos[i].die_lock);
+		pthread_mutex_destroy(&obj->philos[i].message_lock);
 		pthread_mutex_destroy(&obj->philos[i].simulation_lock);
 		i++;
 	}

@@ -6,11 +6,49 @@
 /*   By: msavelie <msavelie@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/11 14:17:50 by msavelie          #+#    #+#             */
-/*   Updated: 2024/12/13 16:25:02 by msavelie         ###   ########.fr       */
+/*   Updated: 2024/12/13 17:29:46 by msavelie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+
+static int	lock_forks(t_philo *philo, size_t *time, size_t start_time)
+{
+	*time = get_time();
+	pthread_mutex_lock(&philo->meal_lock);
+	if (*time - philo->last_meal_time >= (size_t) philo->data.time_to_die)
+	{
+		printf("check 1\n");
+		pthread_mutex_lock(&philo->message_lock);
+		printf("%zu %d died\n", *time - start_time, philo->id);
+		philo->is_dead = 1;
+		pthread_mutex_unlock(&philo->message_lock);
+		pthread_mutex_unlock(&philo->meal_lock);
+		return (0);
+	}
+	pthread_mutex_unlock(&philo->meal_lock);
+	if (philo->id % 2 == 1)
+	{
+		pthread_mutex_lock(philo->left_fork);
+		pthread_mutex_lock(&philo->message_lock);
+		printf("%zu %d has taken a fork\n", *time - start_time, philo->id);
+		pthread_mutex_unlock(&philo->message_lock);
+		pthread_mutex_lock(philo->right_fork);
+	}
+	else
+	{
+		pthread_mutex_lock(philo->right_fork);
+		pthread_mutex_lock(&philo->message_lock);
+		printf("%zu %d has taken a fork\n", *time - start_time, philo->id);
+		pthread_mutex_unlock(&philo->message_lock);
+		pthread_mutex_lock(philo->left_fork);
+	}
+	*time = get_time();
+	pthread_mutex_lock(&philo->message_lock);
+	printf("%zu %d has taken a fork\n", *time - start_time, philo->id);
+	pthread_mutex_unlock(&philo->message_lock);
+	return (1);
+}
 
 size_t	get_time(void)
 {
@@ -18,6 +56,18 @@ size_t	get_time(void)
 
 	gettimeofday(&tv, NULL);
 	return ((tv.tv_sec * 1000) + (tv.tv_usec / 1000));
+}
+
+int	is_simulation(t_philo *obj)
+{
+	pthread_mutex_lock(&obj->simulation_lock);
+	if (obj->is_simulation == 0)
+	{
+		pthread_mutex_unlock(&obj->simulation_lock);
+		return (0);
+	}
+	pthread_mutex_unlock(&obj->simulation_lock);
+	return (1);
 }
 
 void	*start_routine(void *philo)
@@ -28,12 +78,14 @@ void	*start_routine(void *philo)
 
 	temp = (t_philo *) philo;
 	start_time = get_time();
-	while (temp->is_simulation != 0)
+	while (is_simulation(temp) != 0)
 	{
-		if (temp->meals_eaten > 0)
+		if (is_simulation(temp) != 0)
 		{
 			time = get_time();
+			pthread_mutex_lock(&temp->message_lock);
 			printf("%zu %d is thinking\n", time - start_time, temp->id);
+			pthread_mutex_unlock(&temp->message_lock);
 		}
 		if (temp->meals_eaten == 0)
 		{
@@ -42,39 +94,15 @@ void	*start_routine(void *philo)
 			pthread_mutex_unlock(&temp->meal_lock);
 		}
 			
+		if (is_simulation(temp) == 0 || !lock_forks(temp, &time, start_time))
+			break ;
 		time = get_time();
 		if (time - temp->last_meal_time >= (size_t) temp->data.time_to_die)
 		{
-			printf("check 1\n");
-			pthread_mutex_lock(&temp->die_lock);
+			pthread_mutex_lock(&temp->message_lock);
 			printf("%zu %d died\n", time - start_time, temp->id);
 			temp->is_dead = 1;
-			pthread_mutex_unlock(&temp->die_lock);
-			break;
-		}
-
-		if (temp->id % 2 == 1)
-		{
-			pthread_mutex_lock(temp->left_fork);
-			printf("%zu %d has taken a fork\n", time - start_time, temp->id);
-			pthread_mutex_lock(temp->right_fork);
-		}
-		else
-		{
-			pthread_mutex_lock(temp->right_fork);
-			printf("%zu %d has taken a fork\n", time - start_time, temp->id);
-			pthread_mutex_lock(temp->left_fork);
-		}
-		time = get_time();
-		printf("%zu %d has taken a fork\n", time - start_time, temp->id);
-		time = get_time();
-		if (time - temp->last_meal_time >= (size_t) temp->data.time_to_die)
-		{
-			printf("check 2\n");
-			pthread_mutex_lock(&temp->die_lock);
-			printf("%zu %d died\n", time - start_time, temp->id);
-			temp->is_dead = 1;
-			pthread_mutex_unlock(&temp->die_lock);
+			pthread_mutex_unlock(&temp->message_lock);
 			if (temp->id % 2 == 1)
 			{
 				pthread_mutex_unlock(temp->right_fork);
@@ -87,52 +115,21 @@ void	*start_routine(void *philo)
 			}
 			break;
 		}
+		pthread_mutex_lock(&temp->message_lock);
 		printf("%zu %d is eating\n", time - start_time, temp->id);
+		pthread_mutex_unlock(&temp->message_lock);
 		usleep(temp->data.time_to_eat * 1000);
-		pthread_mutex_lock(&temp->meal_lock);
-		temp->last_meal_time = get_time();
-		(temp->meals_eaten)++;
-		pthread_mutex_unlock(&temp->meal_lock);
 		pthread_mutex_unlock(temp->right_fork);
 		pthread_mutex_unlock(temp->left_fork);
+		pthread_mutex_lock(&temp->meal_lock);
+		temp->last_meal_time = get_time();
+		temp->meals_eaten++;
+		pthread_mutex_unlock(&temp->meal_lock);
 		time = get_time();
+		pthread_mutex_lock(&temp->message_lock);
 		printf("%zu %d is sleeping\n", time - start_time, temp->id);
+		pthread_mutex_unlock(&temp->message_lock);
 		usleep(temp->data.time_to_sleep * 1000);
 	}
 	return (NULL);
 }
-
-// int	check_forks(t_holder *obj, int index)
-// {
-// 	//TODO: lock [0] fork
-// 	// 	if succeed try to lock [1] fork
-// 	// 		if succeed - return
-// 	//		if failed - unlock [0] fork 
-// }
-
-/*void	action(t_holder *obj)
-{
-	int	i;
-
-	while (obj->philo_dead == 0 && (obj->meals != 0))
-	{
-		i = 0;
-		while (i < obj->num_philos)
-		{
-			if (pthread_mutex_lock(&obj->forks[i]) == 0)
-			{
-				if (i == obj->num_philos - 1)
-				{
-					if (pthread_mutex_lock(&obj->forks[0]) != 0)
-						pthread_mutex_unlock(&obj->forks[0]);
-				}
-				else
-				{
-					if (pthread_mutex_lock(&obj->forks[i + 1]) != 0)
-						pthread_mutex_unlock(&obj->forks[i]);
-				}
-			}
-			i++;
-		}
-	}
-}*/
