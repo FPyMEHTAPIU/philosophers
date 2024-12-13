@@ -6,16 +6,38 @@
 /*   By: msavelie <msavelie@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/12 12:36:14 by msavelie          #+#    #+#             */
-/*   Updated: 2024/12/12 17:44:44 by msavelie         ###   ########.fr       */
+/*   Updated: 2024/12/13 13:49:18 by msavelie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
+static void	assign_forks(t_holder *obj, t_data data)
+{
+	int	i;
+
+	i = 0;
+	while (i < data.num_philos)
+	{
+		obj->philos[i].data = data;
+		obj->philos[i].thread = &obj->threads[i];
+		obj->philos[i].left_fork = &obj->forks[i];
+		obj->philos[i].right_fork = &obj->forks[(i + 1) % data.num_philos];
+		obj->philos[i].id = i + 1;
+		obj->philos[i].is_dead = 0;
+		obj->philos[i].meals_eaten = 0;
+		i++;
+	}
+}
+
 static int	create_muthreads(t_holder *obj, t_data data)
 {
 	int	i;
 
+	//printf("philos: %d\n", data.num_philos);
+	//printf("time_to_die: %d\n", data.time_to_die);
+	//printf("time_to_eat: %d\n", data.time_to_eat);
+	//printf("time_to_sleep: %d\n", data.time_to_sleep);
 	i = 0;
 	while (i < data.num_philos)
 	{
@@ -27,36 +49,20 @@ static int	create_muthreads(t_holder *obj, t_data data)
 		}
 		i++;
 	}
+	assign_forks(obj, data);
 	i = 0;
 	while (i < data.num_philos)
 	{
 		if (pthread_create(&obj->threads[i], NULL, start_routine, (void *)&obj->philos[i]) != 0)
 		{
 			while (i--)
-				pthread_detach(obj->threads[i]);
+				pthread_join(obj->threads[i], NULL);
 			return (0);
 		}
+		//printf("thread %d created!\n", i);
 		i++;
 	}
 	return (1);
-}
-
-static void	assign_forks(t_holder *obj, t_data data)
-{
-	int	i;
-
-	i = 0;
-	while (i < data.num_philos)
-	{
-		obj->philos[i].thread = &obj->threads[i];
-		obj->philos[i].left_fork = &obj->forks[i];
-		obj->philos[i].right_fork = &obj->forks[(i + 1) % data.num_philos];
-		obj->philos[i].id = i + 1;
-		printf("%d left fork: %p\tright fork: %p\n", obj->philos[i].id, obj->philos[i].left_fork, obj->philos[i].right_fork);
-		obj->philos[i].is_dead = 0;
-		obj->philos[i].meals_eaten = 0;
-		i++;
-	}
 }
 
 static int	init_philos(t_holder *obj, t_data data)
@@ -66,7 +72,6 @@ static int	init_philos(t_holder *obj, t_data data)
 		return (0);
 	if (!create_muthreads(obj, data))
 		return (0);
-	assign_forks(obj, obj->data);
 	return (1);
 }
 

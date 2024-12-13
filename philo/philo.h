@@ -6,7 +6,7 @@
 /*   By: msavelie <msavelie@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/11 11:22:49 by msavelie          #+#    #+#             */
-/*   Updated: 2024/12/12 15:40:37 by msavelie         ###   ########.fr       */
+/*   Updated: 2024/12/13 12:51:13 by msavelie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,7 @@ typedef struct	s_philo
 {
 	int				id;
 	int				meals_eaten;
+	size_t			last_meal_time;
 	int				is_dead;
 	pthread_t		*thread;
 	pthread_mutex_t	*left_fork;

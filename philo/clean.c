@@ -6,7 +6,7 @@
 /*   By: msavelie <msavelie@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/12 13:02:02 by msavelie          #+#    #+#             */
-/*   Updated: 2024/12/12 17:37:11 by msavelie         ###   ########.fr       */
+/*   Updated: 2024/12/13 13:48:27 by msavelie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ void	clean_struct(t_holder *obj)
 	while (--i)
 	{
 		pthread_mutex_destroy(&obj->forks[i]);
-		pthread_detach(obj->threads[i]);
+		pthread_join(obj->threads[i], NULL);
 	}
 	if (obj->forks)
 	{
