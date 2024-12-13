@@ -6,13 +6,13 @@
 /*   By: msavelie <msavelie@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/11 14:17:50 by msavelie          #+#    #+#             */
-/*   Updated: 2024/12/13 13:50:38 by msavelie         ###   ########.fr       */
+/*   Updated: 2024/12/13 16:25:02 by msavelie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-static size_t	get_time(void)
+size_t	get_time(void)
 {
 	struct timeval	tv;
 
@@ -28,45 +28,71 @@ void	*start_routine(void *philo)
 
 	temp = (t_philo *) philo;
 	start_time = get_time();
-	while (1)
+	while (temp->is_simulation != 0)
 	{
-		if (temp->meals_eaten != 0)
+		if (temp->meals_eaten > 0)
+		{
+			time = get_time();
 			printf("%zu %d is thinking\n", time - start_time, temp->id);
+		}
 		if (temp->meals_eaten == 0)
+		{
+			pthread_mutex_lock(&temp->meal_lock);
 			temp->last_meal_time = get_time();
+			pthread_mutex_unlock(&temp->meal_lock);
+		}
+			
 		time = get_time();
 		if (time - temp->last_meal_time >= (size_t) temp->data.time_to_die)
 		{
+			printf("check 1\n");
+			pthread_mutex_lock(&temp->die_lock);
 			printf("%zu %d died\n", time - start_time, temp->id);
 			temp->is_dead = 1;
+			pthread_mutex_unlock(&temp->die_lock);
 			break;
 		}
 
-		pthread_mutex_lock(temp->left_fork);
+		if (temp->id % 2 == 1)
+		{
+			pthread_mutex_lock(temp->left_fork);
+			printf("%zu %d has taken a fork\n", time - start_time, temp->id);
+			pthread_mutex_lock(temp->right_fork);
+		}
+		else
+		{
+			pthread_mutex_lock(temp->right_fork);
+			printf("%zu %d has taken a fork\n", time - start_time, temp->id);
+			pthread_mutex_lock(temp->left_fork);
+		}
+		time = get_time();
+		printf("%zu %d has taken a fork\n", time - start_time, temp->id);
 		time = get_time();
 		if (time - temp->last_meal_time >= (size_t) temp->data.time_to_die)
 		{
+			printf("check 2\n");
+			pthread_mutex_lock(&temp->die_lock);
 			printf("%zu %d died\n", time - start_time, temp->id);
 			temp->is_dead = 1;
-			pthread_mutex_unlock(temp->left_fork);
+			pthread_mutex_unlock(&temp->die_lock);
+			if (temp->id % 2 == 1)
+			{
+				pthread_mutex_unlock(temp->right_fork);
+				pthread_mutex_unlock(temp->left_fork);
+			}
+			else
+			{
+				pthread_mutex_unlock(temp->left_fork);
+				pthread_mutex_unlock(temp->right_fork);
+			}
 			break;
 		}
-		printf("%zu %d has taken a fork\n", time - start_time, temp->id);
-		pthread_mutex_lock(temp->right_fork);
-		time = get_time();
-		if (time - temp->last_meal_time >= (size_t) temp->data.time_to_die)
-		{
-			printf("%zu %d died\n", time - start_time, temp->id);
-			temp->is_dead = 1;
-			pthread_mutex_unlock(temp->right_fork);
-			pthread_mutex_unlock(temp->left_fork);
-			break;
-		}
-		printf("%zu %d has taken a fork\n", time - start_time, temp->id);
-		temp->meals_eaten++;
 		printf("%zu %d is eating\n", time - start_time, temp->id);
 		usleep(temp->data.time_to_eat * 1000);
+		pthread_mutex_lock(&temp->meal_lock);
 		temp->last_meal_time = get_time();
+		(temp->meals_eaten)++;
+		pthread_mutex_unlock(&temp->meal_lock);
 		pthread_mutex_unlock(temp->right_fork);
 		pthread_mutex_unlock(temp->left_fork);
 		time = get_time();

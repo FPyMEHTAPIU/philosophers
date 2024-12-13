@@ -6,11 +6,25 @@
 /*   By: msavelie <msavelie@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/12 13:02:02 by msavelie          #+#    #+#             */
-/*   Updated: 2024/12/13 13:48:27 by msavelie         ###   ########.fr       */
+/*   Updated: 2024/12/13 15:20:03 by msavelie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+
+static void	destroy_philo_mtxs(t_holder *obj)
+{
+	int	i;
+
+	i = 0;
+	while (i < obj->data.num_philos)
+	{
+		pthread_mutex_destroy(&obj->philos[i].meal_lock);
+		pthread_mutex_destroy(&obj->philos[i].die_lock);
+		pthread_mutex_destroy(&obj->philos[i].simulation_lock);
+		i++;
+	}
+}
 
 void	clean_struct(t_holder *obj)
 {
@@ -36,6 +50,7 @@ void	clean_struct(t_holder *obj)
 	}
 	if (obj->philos)
 	{
+		destroy_philo_mtxs(obj);
 		free(obj->philos);
 		obj->philos = NULL;
 	}

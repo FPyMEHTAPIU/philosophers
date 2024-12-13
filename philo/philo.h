@@ -6,7 +6,7 @@
 /*   By: msavelie <msavelie@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/11 11:22:49 by msavelie          #+#    #+#             */
-/*   Updated: 2024/12/13 12:51:13 by msavelie         ###   ########.fr       */
+/*   Updated: 2024/12/13 15:19:19 by msavelie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,11 @@ typedef struct	s_philo
 	pthread_t		*thread;
 	pthread_mutex_t	*left_fork;
 	pthread_mutex_t	*right_fork;
+	pthread_mutex_t	meal_lock;
+	pthread_mutex_t	die_lock;
+	pthread_mutex_t	simulation_lock;
 	t_data			data;
+	int				is_simulation;
 }	t_philo;
 
 typedef struct	s_holder
@@ -59,5 +63,7 @@ void		action(t_holder *obj);
 t_holder	init_holder(char **argv);
 void		clean_struct(t_holder *obj);
 void		*start_routine(void *obj);
+void		run_monitoring(t_holder *obj);
+size_t		get_time(void);
 
 #endif
