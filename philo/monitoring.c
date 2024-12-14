@@ -6,7 +6,7 @@
 /*   By: msavelie <msavelie@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/13 14:25:19 by msavelie          #+#    #+#             */
-/*   Updated: 2024/12/14 17:18:43 by msavelie         ###   ########.fr       */
+/*   Updated: 2024/12/14 17:41:04 by msavelie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,13 +14,9 @@
 
 void	set_simulation_end(t_holder *obj)
 {
-	int	i;
-
-	i = 0;
 	pthread_mutex_lock(&obj->simulation_lock);
 	obj->is_simulation = 0;
 	pthread_mutex_unlock(&obj->simulation_lock);
-	clean_struct(obj);
 }
 
 static int	check_all_alive(t_holder *obj)
@@ -58,12 +54,6 @@ static int	check_meals_completed(t_holder *obj, t_data data)
 	{
 		pthread_mutex_lock(&obj->philos[i].meal_lock);
 		time = get_time();
-		if (!is_simulation(obj))
-		{
-			pthread_mutex_unlock(&obj->philos[i].meal_lock);
-			print_message(&obj->philos[i], "died", time - obj->start_time, 1);
-			return (1);
-		}
 		if (obj->philos[i].meals_eaten < data.meals)
 		{
 			pthread_mutex_unlock(&obj->philos[i].meal_lock);
@@ -73,6 +63,7 @@ static int	check_meals_completed(t_holder *obj, t_data data)
 		i++;
 	}
 	printf("Harry you are a wizard!\n");
+	set_simulation_end(obj);
 	return (1);
 }
 
@@ -93,4 +84,5 @@ void	run_monitoring(t_holder *obj)
 		}
 		usleep(100);
 	}
+	clean_struct(obj);
 }

@@ -6,7 +6,7 @@
 /*   By: msavelie <msavelie@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/12 12:36:14 by msavelie          #+#    #+#             */
-/*   Updated: 2024/12/14 17:05:55 by msavelie         ###   ########.fr       */
+/*   Updated: 2024/12/14 17:30:28 by msavelie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,6 +56,7 @@ static int	create_muthreads(t_holder *obj, t_data data)
 	}
 	assign_forks(obj, data);
 	i = 0;
+	obj->start_time = get_time();
 	while (i < data.num_philos)
 	{
 		if (pthread_create(&obj->threads[i], NULL, start_routine, (void *)&obj->philos[i]) != 0)
