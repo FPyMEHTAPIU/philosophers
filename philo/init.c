@@ -6,7 +6,7 @@
 /*   By: msavelie <msavelie@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/12 12:36:14 by msavelie          #+#    #+#             */
-/*   Updated: 2024/12/14 13:29:23 by msavelie         ###   ########.fr       */
+/*   Updated: 2024/12/14 17:05:55 by msavelie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,9 +24,7 @@ static void	assign_forks(t_holder *obj, t_data data)
 		obj->philos[i].left_fork = &obj->forks[i];
 		obj->philos[i].right_fork = &obj->forks[(i + 1) % data.num_philos];
 		obj->philos[i].id = i + 1;
-		obj->philos[i].is_dead = 0;
 		obj->philos[i].meals_eaten = 0;
-		obj->philos[i].is_simulation = 1;
 		pthread_mutex_init(&obj->philos[i].meal_lock, NULL);
 		obj->philos[i].message_lock = &obj->message_lock;
 		obj->philos[i].simulation_lock = &obj->simulation_lock;
@@ -52,7 +50,7 @@ static int	create_muthreads(t_holder *obj, t_data data)
 	}
 	if (pthread_mutex_init(&obj->message_lock, NULL) != 0 || pthread_mutex_init(&obj->simulation_lock, NULL) != 0)
 	{
-		while (--i)
+		while (i--)
 			pthread_mutex_destroy(&obj->forks[i]);
 		return (0);
 	}
@@ -105,6 +103,5 @@ t_holder	init_holder(char **argv)
 		clean_struct(&obj);
 	else
 		obj.init_err = 0;
-	obj.philo_dead = 0;
 	return (obj);
 }

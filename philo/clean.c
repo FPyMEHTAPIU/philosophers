@@ -6,7 +6,7 @@
 /*   By: msavelie <msavelie@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/12 13:02:02 by msavelie          #+#    #+#             */
-/*   Updated: 2024/12/14 15:30:53 by msavelie         ###   ########.fr       */
+/*   Updated: 2024/12/14 16:48:26 by msavelie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,12 +31,11 @@ void	clean_struct(t_holder *obj)
 	if (!obj)
 		return ;
 	i = obj->data.num_philos;
-	while (--i)
+	while (i--)
 	{
 		pthread_mutex_destroy(&obj->forks[i]);
 		pthread_join(obj->threads[i], NULL);
 	}
-	pthread_mutex_unlock(&obj->message_lock);
 	pthread_mutex_destroy(&obj->message_lock);
 	pthread_mutex_destroy(&obj->simulation_lock);
 	if (obj->forks)

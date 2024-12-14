@@ -6,7 +6,7 @@
 /*   By: msavelie <msavelie@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/11 11:22:49 by msavelie          #+#    #+#             */
-/*   Updated: 2024/12/14 13:28:52 by msavelie         ###   ########.fr       */
+/*   Updated: 2024/12/14 17:17:12 by msavelie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,14 +33,12 @@ typedef struct	s_philo
 	int				id;
 	int				meals_eaten;
 	size_t			last_meal_time;
-	int				is_dead;
 	pthread_mutex_t	*left_fork;
 	pthread_mutex_t	*right_fork;
 	pthread_mutex_t	meal_lock;
 	pthread_mutex_t	*message_lock;
 	pthread_mutex_t	*simulation_lock;
 	t_data			data;
-	int				is_simulation;
 	struct s_holder	*obj;
 }	t_philo;
 
@@ -53,7 +51,8 @@ typedef struct	s_holder
 	t_philo			*philos;
 	t_data			data;
 	int				init_err;
-	int				philo_dead;
+	int				is_simulation;
+	size_t			start_time;
 }	t_holder;
 
 int			ft_putendl_fd(char *s, int fd);
@@ -66,7 +65,7 @@ void		clean_struct(t_holder *obj);
 void		*start_routine(void *obj);
 void		run_monitoring(t_holder *obj);
 size_t		get_time(void);
-int			is_simulation(t_philo *obj);
+int			is_simulation(t_holder *obj);
 void		print_message(t_philo *philo, const char *mes, size_t time, int die);
 void		set_simulation_end(t_holder *obj);
 

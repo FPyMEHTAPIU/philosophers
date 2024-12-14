@@ -6,7 +6,7 @@
 /*   By: msavelie <msavelie@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/11 11:34:35 by msavelie          #+#    #+#             */
-/*   Updated: 2024/12/14 14:20:29 by msavelie         ###   ########.fr       */
+/*   Updated: 2024/12/14 17:05:17 by msavelie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,5 +59,6 @@ int	parse_args(t_holder *obj, char **argv)
 	}
 	else
 		obj->data.meals = -1;
+	obj->is_simulation = 1;
 	return (0);
 }
