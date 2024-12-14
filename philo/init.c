@@ -6,7 +6,7 @@
 /*   By: msavelie <msavelie@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/12 12:36:14 by msavelie          #+#    #+#             */
-/*   Updated: 2024/12/13 17:08:07 by msavelie         ###   ########.fr       */
+/*   Updated: 2024/12/14 13:29:23 by msavelie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,8 +19,8 @@ static void	assign_forks(t_holder *obj, t_data data)
 	i = 0;
 	while (i < data.num_philos)
 	{
+		obj->philos[i].obj = obj;
 		obj->philos[i].data = data;
-		obj->philos[i].thread = &obj->threads[i];
 		obj->philos[i].left_fork = &obj->forks[i];
 		obj->philos[i].right_fork = &obj->forks[(i + 1) % data.num_philos];
 		obj->philos[i].id = i + 1;
@@ -28,8 +28,9 @@ static void	assign_forks(t_holder *obj, t_data data)
 		obj->philos[i].meals_eaten = 0;
 		obj->philos[i].is_simulation = 1;
 		pthread_mutex_init(&obj->philos[i].meal_lock, NULL);
-		pthread_mutex_init(&obj->philos[i].message_lock, NULL);
-		pthread_mutex_init(&obj->philos[i].simulation_lock, NULL);
+		obj->philos[i].message_lock = &obj->message_lock;
+		obj->philos[i].simulation_lock = &obj->simulation_lock;
+		//pthread_mutex_init(&obj->philos[i].simulation_lock, NULL);
 		i++;
 	}
 }
@@ -38,10 +39,6 @@ static int	create_muthreads(t_holder *obj, t_data data)
 {
 	int	i;
 
-	//printf("philos: %d\n", data.num_philos);
-	//printf("time_to_die: %d\n", data.time_to_die);
-	//printf("time_to_eat: %d\n", data.time_to_eat);
-	//printf("time_to_sleep: %d\n", data.time_to_sleep);
 	i = 0;
 	while (i < data.num_philos)
 	{
@@ -53,6 +50,12 @@ static int	create_muthreads(t_holder *obj, t_data data)
 		}
 		i++;
 	}
+	if (pthread_mutex_init(&obj->message_lock, NULL) != 0 || pthread_mutex_init(&obj->simulation_lock, NULL) != 0)
+	{
+		while (--i)
+			pthread_mutex_destroy(&obj->forks[i]);
+		return (0);
+	}
 	assign_forks(obj, data);
 	i = 0;
 	while (i < data.num_philos)
@@ -63,7 +66,6 @@ static int	create_muthreads(t_holder *obj, t_data data)
 				pthread_join(obj->threads[i], NULL);
 			return (0);
 		}
-		//printf("thread %d created!\n", i);
 		i++;
 	}
 	return (1);

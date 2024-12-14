@@ -6,7 +6,7 @@
 /*   By: msavelie <msavelie@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/11 11:22:49 by msavelie          #+#    #+#             */
-/*   Updated: 2024/12/13 17:27:02 by msavelie         ###   ########.fr       */
+/*   Updated: 2024/12/14 13:28:52 by msavelie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,20 +34,22 @@ typedef struct	s_philo
 	int				meals_eaten;
 	size_t			last_meal_time;
 	int				is_dead;
-	pthread_t		*thread;
 	pthread_mutex_t	*left_fork;
 	pthread_mutex_t	*right_fork;
 	pthread_mutex_t	meal_lock;
-	pthread_mutex_t	message_lock;
-	pthread_mutex_t	simulation_lock;
+	pthread_mutex_t	*message_lock;
+	pthread_mutex_t	*simulation_lock;
 	t_data			data;
 	int				is_simulation;
+	struct s_holder	*obj;
 }	t_philo;
 
 typedef struct	s_holder
 {
 	pthread_t		*threads;
 	pthread_mutex_t	*forks;
+	pthread_mutex_t	message_lock;
+	pthread_mutex_t	simulation_lock;
 	t_philo			*philos;
 	t_data			data;
 	int				init_err;
@@ -59,12 +61,13 @@ int			is_number(char *arg);
 int			write_err(int type);
 int			ft_atoi(const char *str);
 int			parse_args(t_holder *obj, char **argv);
-void		action(t_holder *obj);
 t_holder	init_holder(char **argv);
 void		clean_struct(t_holder *obj);
 void		*start_routine(void *obj);
 void		run_monitoring(t_holder *obj);
 size_t		get_time(void);
 int			is_simulation(t_philo *obj);
+void		print_message(t_philo *philo, const char *mes, size_t time, int die);
+void		set_simulation_end(t_holder *obj);
 
 #endif
