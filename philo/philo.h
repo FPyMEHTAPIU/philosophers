@@ -32,7 +32,7 @@ typedef struct	s_philo
 {
 	int				id;
 	int				meals_eaten;
-	size_t			last_meal_time;
+	unsigned long long			last_meal_time;
 	pthread_mutex_t	*left_fork;
 	pthread_mutex_t	*right_fork;
 	pthread_mutex_t	meal_lock;
@@ -52,7 +52,7 @@ typedef struct	s_holder
 	t_data			data;
 	int				init_err;
 	int				is_simulation;
-	size_t			start_time;
+	unsigned long long			start_time;
 }	t_holder;
 
 int			ft_putendl_fd(char *s, int fd);
@@ -63,7 +63,7 @@ int			parse_args(t_holder *obj, char **argv);
 t_holder	init_holder(char **argv);
 void		clean_struct(t_holder *obj);
 void		*start_routine(void *obj);
-void		run_monitoring(t_holder *obj);
+void		*run_monitoring(t_holder *obj);
 size_t		get_time(void);
 int			is_simulation(t_holder *obj);
 void		print_message(t_philo *philo, const char *mes, size_t time, int die);

@@ -45,7 +45,6 @@ static int	check_all_alive(t_holder *obj)
 static int	check_meals_completed(t_holder *obj, t_data data)
 {
 	int		i;
-	size_t	time;
 
 	if (data.meals == -1)
 		return (0);
@@ -53,7 +52,6 @@ static int	check_meals_completed(t_holder *obj, t_data data)
 	while (i < obj->data.num_philos)
 	{
 		pthread_mutex_lock(&obj->philos[i].meal_lock);
-		time = get_time();
 		if (obj->philos[i].meals_eaten < data.meals)
 		{
 			pthread_mutex_unlock(&obj->philos[i].meal_lock);
@@ -67,7 +65,7 @@ static int	check_meals_completed(t_holder *obj, t_data data)
 	return (1);
 }
 
-void	run_monitoring(t_holder *obj)
+void	*run_monitoring(t_holder *obj)
 {
 	int		meals_completed;
 
@@ -82,7 +80,7 @@ void	run_monitoring(t_holder *obj)
 		{
 			break ;
 		}
-		usleep(100);
+		usleep(500);
 	}
-	clean_struct(obj);
+	return (NULL);
 }

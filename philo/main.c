@@ -22,6 +22,6 @@ int	main(int argc, char **argv)
 	if (obj.init_err == 1)
 		return (1);
 	run_monitoring(&obj);
-	//clean_struct(&obj);
+	clean_struct(&obj);
 	return (0);
 }

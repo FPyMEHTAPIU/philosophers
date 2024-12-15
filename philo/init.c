@@ -28,7 +28,6 @@ static void	assign_forks(t_holder *obj, t_data data)
 		pthread_mutex_init(&obj->philos[i].meal_lock, NULL);
 		obj->philos[i].message_lock = &obj->message_lock;
 		obj->philos[i].simulation_lock = &obj->simulation_lock;
-		//pthread_mutex_init(&obj->philos[i].simulation_lock, NULL);
 		i++;
 	}
 }
@@ -56,7 +55,9 @@ static int	create_muthreads(t_holder *obj, t_data data)
 	}
 	assign_forks(obj, data);
 	i = 0;
+	pthread_mutex_lock(&obj->simulation_lock);
 	obj->start_time = get_time();
+	pthread_mutex_unlock(&obj->simulation_lock);
 	while (i < data.num_philos)
 	{
 		if (pthread_create(&obj->threads[i], NULL, start_routine, (void *)&obj->philos[i]) != 0)

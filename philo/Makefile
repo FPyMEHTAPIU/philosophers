@@ -36,7 +36,7 @@ SRCS = \
 
 OBJS = ${SRCS:.c=.o}
 
-CFLAGS = -g -Wall -Werror -Wextra
+CFLAGS = -g -Wall -Werror -Wextra -Wpedantic
 
 RM = rm -rf
 

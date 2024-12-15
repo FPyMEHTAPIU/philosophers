@@ -77,9 +77,6 @@ size_t	get_time(void)
 
 int	is_simulation(t_holder *obj)
 {
-	int	i;
-
-	i = 0;
 	pthread_mutex_lock(&obj->simulation_lock);
 	if (obj->is_simulation == 0)
 	{
@@ -100,30 +97,28 @@ void	*start_routine(void *philo)
 	temp->last_meal_time = get_time();
 	pthread_mutex_unlock(&temp->meal_lock);
 	if (temp->id % 2 == 0)
-		usleep(100);
+		usleep(1000);
 	while (is_simulation(temp->obj) != 0)
 	{
-		if (is_simulation(temp->obj) == 0)
-			break;
 		time = get_time();
 		print_message(philo, "is thinking", time - temp->obj->start_time, 0);
 	
-		if (is_simulation(temp->obj) == 0 || lock_forks(temp, &time, temp->obj->start_time) == 0)
+		if (lock_forks(temp, &time, temp->obj->start_time) == 0)
 			break;
 		if (is_simulation(temp->obj) == 0)
 			break;
 		pthread_mutex_lock(&temp->meal_lock);
-		time = get_time();
-		print_message(philo, "is eating", time - temp->obj->start_time, 0);
 		temp->last_meal_time = time;
 		temp->meals_eaten++;
-		printf("meals %d: %d\n", temp->id, temp->meals_eaten);
-		pthread_mutex_unlock(&temp->meal_lock);
+		time = get_time();
+		print_message(philo, "is eating", time - temp->obj->start_time, 0);
+		//printf("meals %d: %d\n", temp->id, temp->meals_eaten);
 		usleep(temp->data.time_to_eat * 1000);
+		pthread_mutex_unlock(&temp->meal_lock);
 		if (is_simulation(temp->obj) == 0)
 		{
-			pthread_mutex_unlock(temp->left_fork);
 			pthread_mutex_unlock(temp->right_fork);
+			pthread_mutex_unlock(temp->left_fork);
 			break;
 		}	
 		pthread_mutex_unlock(temp->right_fork);
