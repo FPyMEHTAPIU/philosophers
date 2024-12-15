@@ -32,10 +32,10 @@ void	clean_struct(t_holder *obj)
 		return ;
 	i = obj->data.num_philos;
 	while (i--)
-		pthread_mutex_destroy(&obj->forks[i]);
+		pthread_join(obj->threads[i], NULL);
 	i = obj->data.num_philos;
 	while (i--)
-		pthread_join(obj->threads[i], NULL);
+		pthread_mutex_destroy(&obj->forks[i]);
 	pthread_mutex_destroy(&obj->message_lock);
 	pthread_mutex_destroy(&obj->simulation_lock);
 	if (obj->forks)

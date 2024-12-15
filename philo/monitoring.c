@@ -29,11 +29,13 @@ static int	check_all_alive(t_holder *obj)
 	{
 		pthread_mutex_lock(&obj->philos[i].meal_lock);
 		time = get_time();
-		if (!is_simulation(obj) ||
-			time - obj->philos[i].last_meal_time >= (size_t) obj->data.time_to_die)
+		if (!is_simulation(obj))
+			return (0);
+		if (time - obj->philos[i].last_meal_time >= (size_t) obj->data.time_to_die)
 		{
-			pthread_mutex_unlock(&obj->philos[i].meal_lock);
 			print_message(&obj->philos[i], "died", time - obj->start_time, 1);
+			set_simulation_end(obj);
+			pthread_mutex_unlock(&obj->philos[i].meal_lock);
 			return (0);
 		}
 		pthread_mutex_unlock(&obj->philos[i].meal_lock);
