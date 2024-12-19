@@ -6,7 +6,7 @@
 /*   By: msavelie <msavelie@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/11 11:22:49 by msavelie          #+#    #+#             */
-/*   Updated: 2024/12/19 15:38:29 by msavelie         ###   ########.fr       */
+/*   Updated: 2024/12/19 16:33:28 by msavelie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@
 # include <sys/time.h>
 # include <pthread.h>
 
-typedef struct	s_data
+typedef struct s_data
 {
 	int	num_philos;
 	int	time_to_die;
@@ -28,7 +28,7 @@ typedef struct	s_data
 	int	meals;
 }	t_data;
 
-typedef struct	s_philo
+typedef struct s_philo
 {
 	int				id;
 	int				meals_eaten;
@@ -42,7 +42,7 @@ typedef struct	s_philo
 	struct s_holder	*obj;
 }	t_philo;
 
-typedef struct	s_holder
+typedef struct s_holder
 {
 	pthread_t		*threads;
 	pthread_t		monitor;
@@ -67,8 +67,13 @@ void		*start_routine(void *obj);
 void		*run_monitoring(void *obj);
 size_t		get_time(void);
 int			is_simulation(t_holder *obj);
-void		print_message(t_philo *philo, const char *mes, size_t time, int die);
+void		print_message(t_philo *philo, const char *mes,
+				size_t time, int die);
 void		set_simulation_end(t_holder *obj);
-int	init_philos(t_holder *obj, t_data data);
+int			init_philos(t_holder *obj, t_data data);
+void		choose_fork_order(t_philo *philo,
+				pthread_mutex_t **first_fork, pthread_mutex_t **second_fork);
+int			lock_forks(t_philo *philo, size_t *time, size_t start_time);
+void		unlock_forks(t_philo *philo);
 
 #endif

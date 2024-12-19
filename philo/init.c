@@ -6,7 +6,7 @@
 /*   By: msavelie <msavelie@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/12 12:36:14 by msavelie          #+#    #+#             */
-/*   Updated: 2024/12/19 15:10:08 by msavelie         ###   ########.fr       */
+/*   Updated: 2024/12/19 16:32:11 by msavelie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,35 @@ static void	assign_forks(t_holder *obj, t_data data)
 	}
 }
 
+static int	create_threads(t_holder *obj, t_data data)
+{
+	int	i;
+
+	pthread_mutex_lock(&obj->simulation_lock);
+	obj->start_time = get_time();
+	pthread_mutex_unlock(&obj->simulation_lock);
+	i = 0;
+	while (i < data.num_philos)
+	{
+		if (pthread_create(&obj->threads[i], NULL, start_routine,
+				(void *)&obj->philos[i]) != 0)
+		{
+			while (i--)
+				pthread_join(obj->threads[i], NULL);
+			return (0);
+		}
+		i++;
+	}
+	usleep(1000);
+	if (pthread_create(&obj->monitor, NULL, run_monitoring, (void *)obj) != 0)
+	{
+		while (i--)
+			pthread_join(obj->threads[i], NULL);
+		return (0);
+	}
+	return (1);
+}
+
 static int	create_muthreads(t_holder *obj, t_data data)
 {
 	int	i;
@@ -48,29 +77,16 @@ static int	create_muthreads(t_holder *obj, t_data data)
 		}
 		i++;
 	}
-	if (pthread_mutex_init(&obj->message_lock, NULL) != 0 || pthread_mutex_init(&obj->simulation_lock, NULL) != 0)
+	if (pthread_mutex_init(&obj->message_lock, NULL) != 0
+		|| pthread_mutex_init(&obj->simulation_lock, NULL) != 0)
 	{
 		while (i--)
 			pthread_mutex_destroy(&obj->forks[i]);
 		return (0);
 	}
 	assign_forks(obj, data);
-	i = 0;
-	pthread_mutex_lock(&obj->simulation_lock);
-	obj->start_time = get_time();
-	pthread_mutex_unlock(&obj->simulation_lock);
-	while (i < data.num_philos)
-	{
-		if (pthread_create(&obj->threads[i], NULL, start_routine, (void *)&obj->philos[i]) != 0)
-		{
-			while (i--)
-				pthread_join(obj->threads[i], NULL);
-			return (0);
-		}
-		i++;
-	}
-	usleep(1000);
-	pthread_create(&obj->monitor, NULL, run_monitoring, (void *)obj);
+	if (!create_threads(obj, data))
+		return (0);
 	return (1);
 }
 

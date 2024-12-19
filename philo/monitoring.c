@@ -6,7 +6,7 @@
 /*   By: msavelie <msavelie@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/13 14:25:19 by msavelie          #+#    #+#             */
-/*   Updated: 2024/12/19 15:38:33 by msavelie         ###   ########.fr       */
+/*   Updated: 2024/12/19 16:32:43 by msavelie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,8 @@ static int	check_all_alive(t_holder *obj)
 			return (0);
 		if (obj->philos[i].last_meal_time == 0)
 			return (1);
-		if (time - obj->philos[i].last_meal_time >= (size_t) obj->data.time_to_die)
+		if (time - obj->philos[i].last_meal_time >= \
+			(size_t) obj->data.time_to_die)
 		{
 			print_message(&obj->philos[i], "died", time - obj->start_time, 1);
 			set_simulation_end(obj);
@@ -70,7 +71,7 @@ static int	check_meals_completed(t_holder *obj, t_data data)
 
 void	*run_monitoring(void *obj)
 {
-	int		meals_completed;
+	int			meals_completed;
 	t_holder	*temp;
 
 	temp = (t_holder *)obj;

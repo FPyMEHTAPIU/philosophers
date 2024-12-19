@@ -6,7 +6,7 @@
 /*   By: msavelie <msavelie@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/11 11:38:15 by msavelie          #+#    #+#             */
-/*   Updated: 2024/12/11 12:29:01 by msavelie         ###   ########.fr       */
+/*   Updated: 2024/12/19 16:17:25 by msavelie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ int	is_number(char *arg)
 	i = 0;
 	while (arg[i])
 	{
-		if (arg[i] <'0' || arg[i] > '9')
+		if (arg[i] < '0' || arg[i] > '9')
 			return (0);
 		i++;
 	}

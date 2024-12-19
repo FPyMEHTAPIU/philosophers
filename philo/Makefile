@@ -6,7 +6,7 @@
 #    By: msavelie <msavelie@student.hive.fi>        +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/12/11 11:21:34 by msavelie          #+#    #+#              #
-#    Updated: 2024/12/13 14:36:23 by msavelie         ###   ########.fr        #
+#    Updated: 2024/12/19 16:23:21 by msavelie         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -32,7 +32,9 @@ SRCS = \
 	action.c \
 	clean.c \
 	init.c \
-	monitoring.c
+	monitoring.c \
+	forks.c \
+	philo_utils.c
 
 OBJS = ${SRCS:.c=.o}
 

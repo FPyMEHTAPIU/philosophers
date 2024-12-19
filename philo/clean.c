@@ -6,7 +6,7 @@
 /*   By: msavelie <msavelie@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/12 13:02:02 by msavelie          #+#    #+#             */
-/*   Updated: 2024/12/19 10:31:30 by msavelie         ###   ########.fr       */
+/*   Updated: 2024/12/19 16:30:51 by msavelie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,12 +24,10 @@ static void	destroy_philo_mtxs(t_holder *obj)
 	}
 }
 
-void	clean_struct(t_holder *obj)
+static void	destroy_threads_mutexes(t_holder *obj)
 {
 	int	i;
 
-	if (!obj)
-		return ;
 	i = obj->data.num_philos;
 	while (i--)
 		pthread_join(obj->threads[i], NULL);
@@ -39,6 +37,13 @@ void	clean_struct(t_holder *obj)
 		pthread_mutex_destroy(&obj->forks[i]);
 	pthread_mutex_destroy(&obj->message_lock);
 	pthread_mutex_destroy(&obj->simulation_lock);
+}
+
+void	clean_struct(t_holder *obj)
+{
+	if (!obj)
+		return ;
+	destroy_threads_mutexes(obj);
 	if (obj->forks)
 	{
 		free(obj->forks);
