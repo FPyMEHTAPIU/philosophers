@@ -6,19 +6,19 @@
 /*   By: msavelie <msavelie@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/11 14:17:50 by msavelie          #+#    #+#             */
-/*   Updated: 2024/12/19 16:26:09 by msavelie         ###   ########.fr       */
+/*   Updated: 2024/12/19 16:47:21 by msavelie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	sleep_check(t_philo *philo, char *mes, size_t time, int action_time)
+static void	sleep_check(t_philo *philo, char *mes, int action_time)
 {
-	int	sleep_time;
-	int	time_slept;
+	int		sleep_time;
+	int		time_slept;
+	size_t	time;
 
-	if (time == 0)
-		time = get_time();
+	time = get_time();
 	print_message(philo, mes, time - philo->obj->start_time, 0);
 	sleep_time = action_time * 1000;
 	time_slept = 0;
@@ -70,7 +70,7 @@ void	*start_routine(void *philo)
 			break ;
 		if (is_simulation(temp->obj) == 0)
 			break ;
-		sleep_check(temp, "is sleeping", 0, temp->data.time_to_sleep);
+		sleep_check(temp, "is sleeping", temp->data.time_to_sleep);
 	}
 	return (NULL);
 }
