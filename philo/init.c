@@ -6,7 +6,7 @@
 /*   By: msavelie <msavelie@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/12 12:36:14 by msavelie          #+#    #+#             */
-/*   Updated: 2024/12/14 17:30:28 by msavelie         ###   ########.fr       */
+/*   Updated: 2024/12/19 10:31:44 by msavelie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,6 +68,7 @@ static int	create_muthreads(t_holder *obj, t_data data)
 		}
 		i++;
 	}
+	pthread_create(&obj->monitor, NULL, run_monitoring, (void *)obj);
 	return (1);
 }
 

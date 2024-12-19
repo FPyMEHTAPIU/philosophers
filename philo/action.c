@@ -6,7 +6,7 @@
 /*   By: msavelie <msavelie@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/11 14:17:50 by msavelie          #+#    #+#             */
-/*   Updated: 2024/12/14 17:56:09 by msavelie         ###   ########.fr       */
+/*   Updated: 2024/12/19 11:00:18 by msavelie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,11 @@
 void	print_message(t_philo *philo, const char *mes, size_t time, int die)
 {
 	pthread_mutex_lock(&philo->obj->message_lock);
+	if (is_simulation(philo->obj) == 0)
+	{
+		pthread_mutex_unlock(&philo->obj->message_lock);
+		return ;
+	}
 	printf("%zu %d %s\n", time, philo->id, mes);
 	if (die == 1)
 	{
@@ -25,42 +30,23 @@ void	print_message(t_philo *philo, const char *mes, size_t time, int die)
 	pthread_mutex_unlock(&philo->obj->message_lock);
 }
 
-static void	choose_fork_order(t_philo *philo,
-	pthread_mutex_t **first_fork, pthread_mutex_t **second_fork)
-{
-	if (philo->id % 2 == 1)
-	{
-		*first_fork = philo->left_fork;
-		*second_fork = philo->right_fork;
-	}
-	else
-	{
-		*first_fork = philo->right_fork;
-		*second_fork = philo->left_fork;
-	}
-}
-
 static int	lock_forks(t_philo *philo, size_t *time, size_t start_time)
 {
-	pthread_mutex_t	*first_taken;
-	pthread_mutex_t	*second_taken;
-
 	*time = get_time();
-	choose_fork_order(philo, &first_taken, &second_taken);
-	pthread_mutex_lock(first_taken);
+	pthread_mutex_lock(philo->left_fork);
 	*time = get_time();
 	print_message(philo, "has taken a fork", *time - start_time, 0);
 	if (!is_simulation(philo->obj))
 	{
-		pthread_mutex_unlock(first_taken);
+		pthread_mutex_unlock(philo->left_fork);
 		return (0);
 	}
-	pthread_mutex_lock(second_taken);
+	pthread_mutex_lock(philo->right_fork);
 	*time = get_time();
 	if (!is_simulation(philo->obj))
 	{
-		pthread_mutex_unlock(second_taken);
-		pthread_mutex_unlock(first_taken);
+		pthread_mutex_unlock(philo->right_fork);
+		pthread_mutex_unlock(philo->left_fork);
 		return (0);
 	}
 	print_message(philo, "has taken a fork", *time - start_time, 0);
@@ -97,7 +83,7 @@ void	*start_routine(void *philo)
 	temp->last_meal_time = get_time();
 	pthread_mutex_unlock(&temp->meal_lock);
 	if (temp->id % 2 == 0)
-		usleep(1000);
+		usleep(50);
 	while (is_simulation(temp->obj) != 0)
 	{
 		time = get_time();
@@ -108,21 +94,16 @@ void	*start_routine(void *philo)
 		if (is_simulation(temp->obj) == 0)
 			break;
 		pthread_mutex_lock(&temp->meal_lock);
+		time = get_time();
 		temp->last_meal_time = time;
 		temp->meals_eaten++;
-		time = get_time();
-		print_message(philo, "is eating", time - temp->obj->start_time, 0);
-		//printf("meals %d: %d\n", temp->id, temp->meals_eaten);
-		usleep(temp->data.time_to_eat * 1000);
 		pthread_mutex_unlock(&temp->meal_lock);
-		if (is_simulation(temp->obj) == 0)
-		{
-			pthread_mutex_unlock(temp->right_fork);
-			pthread_mutex_unlock(temp->left_fork);
-			break;
-		}	
+		print_message(philo, "is eating", time - temp->obj->start_time, 0);
+		usleep(temp->data.time_to_eat * 1000);
 		pthread_mutex_unlock(temp->right_fork);
 		pthread_mutex_unlock(temp->left_fork);
+		if (is_simulation(temp->obj) == 0)
+			break ;
 		time = get_time();
 		print_message(philo, "is sleeping", time - temp->obj->start_time, 0);
 		usleep(temp->data.time_to_sleep * 1000);

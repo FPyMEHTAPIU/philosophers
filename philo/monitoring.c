@@ -6,7 +6,7 @@
 /*   By: msavelie <msavelie@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/13 14:25:19 by msavelie          #+#    #+#             */
-/*   Updated: 2024/12/14 17:41:04 by msavelie         ###   ########.fr       */
+/*   Updated: 2024/12/19 10:58:48 by msavelie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,8 @@ static int	check_all_alive(t_holder *obj)
 		time = get_time();
 		if (!is_simulation(obj))
 			return (0);
+		if (obj->philos[i].last_meal_time == 0)
+			return (1);
 		if (time - obj->philos[i].last_meal_time >= (size_t) obj->data.time_to_die)
 		{
 			print_message(&obj->philos[i], "died", time - obj->start_time, 1);
@@ -62,27 +64,25 @@ static int	check_meals_completed(t_holder *obj, t_data data)
 		pthread_mutex_unlock(&obj->philos[i].meal_lock);
 		i++;
 	}
-	printf("Harry you are a wizard!\n");
 	set_simulation_end(obj);
 	return (1);
 }
 
-void	*run_monitoring(t_holder *obj)
+void	*run_monitoring(void *obj)
 {
 	int		meals_completed;
+	t_holder	*temp;
 
-	while (is_simulation(obj) != 0)
+	temp = (t_holder *)obj;
+	usleep(1000);
+	while (is_simulation(temp) != 0)
 	{
-		meals_completed = check_meals_completed(obj, obj->data);
+		meals_completed = check_meals_completed(temp, temp->data);
 		if (meals_completed == 1)
-		{
 			break ;
-		}
-		if (check_all_alive(obj) == 0)
-		{
+		if (check_all_alive(temp) == 0)
 			break ;
-		}
-		usleep(500);
+		usleep(1000);
 	}
 	return (NULL);
 }
