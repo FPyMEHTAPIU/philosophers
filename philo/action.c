@@ -6,7 +6,7 @@
 /*   By: msavelie <msavelie@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/11 14:17:50 by msavelie          #+#    #+#             */
-/*   Updated: 2024/12/19 11:00:18 by msavelie         ###   ########.fr       */
+/*   Updated: 2024/12/19 11:23:51 by msavelie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,7 +83,7 @@ void	*start_routine(void *philo)
 	temp->last_meal_time = get_time();
 	pthread_mutex_unlock(&temp->meal_lock);
 	if (temp->id % 2 == 0)
-		usleep(50);
+		usleep(100);
 	while (is_simulation(temp->obj) != 0)
 	{
 		time = get_time();

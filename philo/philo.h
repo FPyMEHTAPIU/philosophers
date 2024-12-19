@@ -6,7 +6,7 @@
 /*   By: msavelie <msavelie@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/11 11:22:49 by msavelie          #+#    #+#             */
-/*   Updated: 2024/12/19 10:31:00 by msavelie         ###   ########.fr       */
+/*   Updated: 2024/12/19 11:38:53 by msavelie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,5 +69,6 @@ size_t		get_time(void);
 int			is_simulation(t_holder *obj);
 void		print_message(t_philo *philo, const char *mes, size_t time, int die);
 void		set_simulation_end(t_holder *obj);
+int	init_philos(t_holder *obj, t_data data);
 
 #endif
