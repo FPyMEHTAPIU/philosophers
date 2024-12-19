@@ -6,7 +6,7 @@
 /*   By: msavelie <msavelie@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/13 14:25:19 by msavelie          #+#    #+#             */
-/*   Updated: 2024/12/19 10:58:48 by msavelie         ###   ########.fr       */
+/*   Updated: 2024/12/19 12:21:01 by msavelie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,7 +74,6 @@ void	*run_monitoring(void *obj)
 	t_holder	*temp;
 
 	temp = (t_holder *)obj;
-	usleep(1000);
 	while (is_simulation(temp) != 0)
 	{
 		meals_completed = check_meals_completed(temp, temp->data);

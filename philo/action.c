@@ -6,7 +6,7 @@
 /*   By: msavelie <msavelie@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/11 14:17:50 by msavelie          #+#    #+#             */
-/*   Updated: 2024/12/19 11:23:51 by msavelie         ###   ########.fr       */
+/*   Updated: 2024/12/19 14:11:27 by msavelie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -106,7 +106,16 @@ void	*start_routine(void *philo)
 			break ;
 		time = get_time();
 		print_message(philo, "is sleeping", time - temp->obj->start_time, 0);
-		usleep(temp->data.time_to_sleep * 1000);
+		int sleep_time = temp->data.time_to_sleep * 1000;
+		int	time_slept = 0;
+		while (time_slept < sleep_time)
+		{
+			if (is_simulation(temp->obj) == 0)
+				break ;
+			usleep(2000);
+			time_slept += 2000;
+		}
+		//usleep(temp->data.time_to_sleep * 1000);
 	}
 	return (NULL);
 }
