@@ -6,7 +6,7 @@
 /*   By: msavelie <msavelie@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/11 14:17:50 by msavelie          #+#    #+#             */
-/*   Updated: 2024/12/19 14:11:27 by msavelie         ###   ########.fr       */
+/*   Updated: 2024/12/19 15:56:04 by msavelie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,27 +30,52 @@ void	print_message(t_philo *philo, const char *mes, size_t time, int die)
 	pthread_mutex_unlock(&philo->obj->message_lock);
 }
 
+static void	choose_fork_order(t_philo *philo,
+	pthread_mutex_t **first_fork, pthread_mutex_t **second_fork)
+{
+	if (philo->id % 2 == 1)
+	{
+		*first_fork = philo->left_fork;
+		*second_fork = philo->right_fork;
+	}
+	else
+	{
+		*first_fork = philo->right_fork;
+		*second_fork = philo->left_fork;
+	}
+}
+
 static int	lock_forks(t_philo *philo, size_t *time, size_t start_time)
 {
+	pthread_mutex_t	*first_taken;
+	pthread_mutex_t	*second_taken;
+
 	*time = get_time();
-	pthread_mutex_lock(philo->left_fork);
+	choose_fork_order(philo, &first_taken, &second_taken);
+	pthread_mutex_lock(first_taken);
 	*time = get_time();
 	print_message(philo, "has taken a fork", *time - start_time, 0);
 	if (!is_simulation(philo->obj))
 	{
-		pthread_mutex_unlock(philo->left_fork);
+		pthread_mutex_unlock(first_taken);
 		return (0);
 	}
-	pthread_mutex_lock(philo->right_fork);
+	pthread_mutex_lock(second_taken);
 	*time = get_time();
 	if (!is_simulation(philo->obj))
 	{
-		pthread_mutex_unlock(philo->right_fork);
-		pthread_mutex_unlock(philo->left_fork);
+		pthread_mutex_unlock(second_taken);
+		pthread_mutex_unlock(first_taken);
 		return (0);
 	}
 	print_message(philo, "has taken a fork", *time - start_time, 0);
 	return (1);
+}
+
+void	unlock_forks(t_philo *philo)
+{
+	pthread_mutex_unlock(philo->right_fork);
+	pthread_mutex_unlock(philo->left_fork);
 }
 
 size_t	get_time(void)
@@ -73,6 +98,25 @@ int	is_simulation(t_holder *obj)
 	return (1);
 }
 
+void	sleep_check(t_philo *philo, char *mes, size_t time, int action_time)
+{
+	int	sleep_time;
+	int	time_slept;
+
+	if (time == 0)
+		time = get_time();
+	print_message(philo, mes, time - philo->obj->start_time, 0);
+	sleep_time = action_time * 1000;
+	time_slept = 0;
+	while (time_slept < sleep_time)
+	{
+		if (is_simulation(philo->obj) == 0)
+			break ;
+		usleep(2000);
+		time_slept += 2000;
+	}
+}
+
 void	*start_routine(void *philo)
 {
 	t_philo	*temp;
@@ -92,7 +136,10 @@ void	*start_routine(void *philo)
 		if (lock_forks(temp, &time, temp->obj->start_time) == 0)
 			break;
 		if (is_simulation(temp->obj) == 0)
+		{
+			unlock_forks(temp);
 			break;
+		}
 		pthread_mutex_lock(&temp->meal_lock);
 		time = get_time();
 		temp->last_meal_time = time;
@@ -100,22 +147,10 @@ void	*start_routine(void *philo)
 		pthread_mutex_unlock(&temp->meal_lock);
 		print_message(philo, "is eating", time - temp->obj->start_time, 0);
 		usleep(temp->data.time_to_eat * 1000);
-		pthread_mutex_unlock(temp->right_fork);
-		pthread_mutex_unlock(temp->left_fork);
+		unlock_forks(temp);
 		if (is_simulation(temp->obj) == 0)
 			break ;
-		time = get_time();
-		print_message(philo, "is sleeping", time - temp->obj->start_time, 0);
-		int sleep_time = temp->data.time_to_sleep * 1000;
-		int	time_slept = 0;
-		while (time_slept < sleep_time)
-		{
-			if (is_simulation(temp->obj) == 0)
-				break ;
-			usleep(2000);
-			time_slept += 2000;
-		}
-		//usleep(temp->data.time_to_sleep * 1000);
+		sleep_check(philo, "is sleeping", 0, temp->data.time_to_sleep);
 	}
 	return (NULL);
 }

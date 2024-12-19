@@ -6,7 +6,7 @@
 /*   By: msavelie <msavelie@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/12 12:36:14 by msavelie          #+#    #+#             */
-/*   Updated: 2024/12/19 12:21:10 by msavelie         ###   ########.fr       */
+/*   Updated: 2024/12/19 15:10:08 by msavelie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ static void	assign_forks(t_holder *obj, t_data data)
 		obj->philos[i].right_fork = &obj->forks[(i + 1) % data.num_philos];
 		obj->philos[i].id = i + 1;
 		obj->philos[i].meals_eaten = 0;
+		obj->philos[i].last_meal_time = 0;
 		pthread_mutex_init(&obj->philos[i].meal_lock, NULL);
 		obj->philos[i].message_lock = &obj->message_lock;
 		obj->philos[i].simulation_lock = &obj->simulation_lock;
