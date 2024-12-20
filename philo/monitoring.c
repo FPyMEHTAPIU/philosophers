@@ -6,7 +6,7 @@
 /*   By: msavelie <msavelie@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/13 14:25:19 by msavelie          #+#    #+#             */
-/*   Updated: 2024/12/19 16:32:43 by msavelie         ###   ########.fr       */
+/*   Updated: 2024/12/20 13:29:57 by msavelie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,7 @@ void	*run_monitoring(void *obj)
 			break ;
 		if (check_all_alive(temp) == 0)
 			break ;
-		usleep(1000);
+		usleep(500);
 	}
 	return (NULL);
 }

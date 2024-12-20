@@ -6,7 +6,7 @@
 /*   By: msavelie <msavelie@student.hive.fi>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/12/11 14:17:50 by msavelie          #+#    #+#             */
-/*   Updated: 2024/12/19 16:47:21 by msavelie         ###   ########.fr       */
+/*   Updated: 2024/12/20 13:29:55 by msavelie         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,20 +14,19 @@
 
 static void	sleep_check(t_philo *philo, char *mes, int action_time)
 {
-	int		sleep_time;
-	int		time_slept;
+	size_t	sleep_time;
 	size_t	time;
 
 	time = get_time();
 	print_message(philo, mes, time - philo->obj->start_time, 0);
-	sleep_time = action_time * 1000;
-	time_slept = 0;
-	while (time_slept < sleep_time)
+	time = get_time();
+	sleep_time = time + action_time;
+	while (time < sleep_time)
 	{
 		if (is_simulation(philo->obj) == 0)
 			break ;
-		usleep(2000);
-		time_slept += 2000;
+		usleep(1000);
+		time = get_time();
 	}
 }
 
@@ -61,7 +60,7 @@ void	*start_routine(void *philo)
 	temp->last_meal_time = get_time();
 	pthread_mutex_unlock(&temp->meal_lock);
 	if (temp->id % 2 == 0)
-		usleep(100);
+		usleep(50);
 	while (is_simulation(temp->obj) != 0)
 	{
 		time = get_time();
